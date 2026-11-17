@@ -3,6 +3,7 @@
 // through the Fusion shim.
 
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { TaskActionsContext } from "./TaskActions";
 import { TaskList } from "./TaskList";
 import { type Filter, type Task, FILTERS } from "./tasks";
 
@@ -36,6 +37,9 @@ export function App() {
   const remove = useCallback((id: number) => {
     setTasks((current) => current.filter((task) => task.id !== id));
   }, []);
+
+  // A context value has to keep its identity, or every consumer re-renders.
+  const actions = useMemo(() => ({ toggle, remove }), [toggle, remove]);
 
   // `tasks` is state, so it only changes identity when it is set.
   useEffect(() => {
@@ -79,7 +83,9 @@ export function App() {
           </button>
         ))}
       </nav>
-      <TaskList tasks={visible} onToggle={toggle} onRemove={remove} />
+      <TaskActionsContext value={actions}>
+        <TaskList tasks={visible} />
+      </TaskActionsContext>
       <p data-testid="remaining">{remaining} remaining</p>
     </main>
   );

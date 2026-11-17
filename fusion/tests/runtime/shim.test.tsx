@@ -2,7 +2,18 @@
 // the real hooks, everything else is passed through, and there is one React.
 
 import * as Shim from "react";
-import React, { stable, useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import React, {
+  createContext,
+  stable,
+  unsafeStable,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { createRequire } from "node:module";
 import { afterEach, expect, test } from "vitest";
@@ -23,12 +34,13 @@ test("every export of real React is passed through unchanged", () => {
     expect(shim[name], `named export ${name}`).toBe(Real[name]);
     expect((React as unknown as Record<string, unknown>)[name], `default export .${name}`).toBe(Real[name]);
   }
-  expect(Object.keys(shim).filter((name) => !(name in Real)).sort()).toEqual(["default", "stable"]);
+  expect(Object.keys(shim).filter((name) => !(name in Real)).sort()).toEqual(["default", "stable", "unsafeStable"]);
 });
 
-test("stable() is the identity function", () => {
+test("stable() and unsafeStable() are the identity function", () => {
   const value = { a: 1 };
   expect(stable(value)).toBe(value);
+  expect(unsafeStable(value, "test fixture")).toBe(value);
 });
 
 test("hooks run against the same React that react-dom renders with", () => {
@@ -85,4 +97,38 @@ test("memoised values keep their identity while their deps are unchanged", () =>
   expect(seen.size).toBe(2);
   view.rerender(<Probe id={2} />);
   expect(seen.size).toBe(4);
+});
+
+test("a Fusion context is a real React context", () => {
+  const Theme = createContext("light");
+  const Auth = createContext<{ name: string } | null>(null);
+  const renders: string[] = [];
+
+  function Reader() {
+    const text = `${useContext(Theme)} ${useContext(Auth)?.name ?? "guest"}`;
+    renders.push(text);
+    return <p>{text}</p>;
+  }
+  const Tree = React.memo(() => <Reader />);
+
+  function App({ name }: { name: string }) {
+    const auth = useMemo(() => ({ name }), [name]);
+    return (
+      <Theme value="dark">
+        <Auth.Provider value={auth}>
+          <Tree />
+        </Auth.Provider>
+      </Theme>
+    );
+  }
+
+  const view = render(<App name="Ada" />);
+  expect(screen.getByText("dark Ada")).toBeTruthy();
+
+  // A memoised value keeps its identity, so consumers do not re-render.
+  view.rerender(<App name="Ada" />);
+  expect(renders).toEqual(["dark Ada"]);
+
+  view.rerender(<App name="Grace" />);
+  expect(renders).toEqual(["dark Ada", "dark Grace"]);
 });

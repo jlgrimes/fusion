@@ -6,17 +6,18 @@
 // ../types/react.d.ts, not the types inferred from this file.
 
 import Original from "fusion-react-original";
-import * as hooks from "./hooks";
-import { stable } from "./stable";
+import { useCallback, useEffect, useImperativeHandle, useInsertionEffect, useLayoutEffect, useMemo, useReducer, useRef, useState, useTransition } from "./hooks";
+import { createContext } from "./context";
+import { stable, unsafeStable } from "./stable";
 
 // React is CommonJS and exports some names that @types/react does not declare.
 const React: Record<string, any> = Original;
 
 // --- redefined by Fusion ---
-export { useCallback, useEffect, useImperativeHandle, useInsertionEffect, useLayoutEffect, useMemo, useReducer, useRef, useState, useTransition } from "./hooks";
+export { createContext, useCallback, useEffect, useImperativeHandle, useInsertionEffect, useLayoutEffect, useMemo, useReducer, useRef, useState, useTransition };
 
 // --- added by Fusion ---
-export { stable };
+export { stable, unsafeStable };
 
 // --- passed through from React ---
 export const Activity = React.Activity;
@@ -36,7 +37,6 @@ export const cache = React.cache;
 export const cacheSignal = React.cacheSignal;
 export const captureOwnerStack = React.captureOwnerStack;
 export const cloneElement = React.cloneElement;
-export const createContext = React.createContext;
 export const createElement = React.createElement;
 export const createRef = React.createRef;
 export const forwardRef = React.forwardRef;
@@ -56,4 +56,4 @@ export const useOptimistic = React.useOptimistic;
 export const useSyncExternalStore = React.useSyncExternalStore;
 export const version = React.version;
 
-export default { ...React, ...hooks, stable };
+export default { ...React, createContext, useCallback, useEffect, useImperativeHandle, useInsertionEffect, useLayoutEffect, useMemo, useReducer, useRef, useState, useTransition, stable, unsafeStable };

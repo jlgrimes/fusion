@@ -8,12 +8,15 @@
 
 import Original = require("fusion-react-original");
 import * as FusionHooks from "../src/hooks";
+import * as FusionContext from "../src/context";
 import * as FusionStable from "../src/stable";
 
 export = React;
 
 declare namespace React {
   // --- redefined by Fusion ---
+  export import Context = FusionContext.Context;
+  export import createContext = FusionContext.createContext;
   export import useCallback = FusionHooks.useCallback;
   export import useEffect = FusionHooks.useEffect;
   export import useImperativeHandle = FusionHooks.useImperativeHandle;
@@ -27,6 +30,7 @@ declare namespace React {
 
   // --- added by Fusion ---
   export import stable = FusionStable.stable;
+  export import unsafeStable = FusionStable.unsafeStable;
   export import Stable = FusionStable.Stable;
 
   // --- passed through from React ---
@@ -87,7 +91,6 @@ declare namespace React {
   export import CompositionEventHandler = Original.CompositionEventHandler;
   export import Consumer = Original.Consumer;
   export import ConsumerProps = Original.ConsumerProps;
-  export import Context = Original.Context;
   export import ContextType = Original.ContextType;
   export import CustomComponentPropsWithRef = Original.CustomComponentPropsWithRef;
   export import DOMAttributes = Original.DOMAttributes;
@@ -267,7 +270,6 @@ declare namespace React {
   export import cacheSignal = Original.cacheSignal;
   export import captureOwnerStack = Original.captureOwnerStack;
   export import cloneElement = Original.cloneElement;
-  export import createContext = Original.createContext;
   export import createElement = Original.createElement;
   export import createRef = Original.createRef;
   export import forwardRef = Original.forwardRef;

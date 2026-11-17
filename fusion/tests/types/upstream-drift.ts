@@ -7,9 +7,12 @@ import type Original from "fusion-react-original";
 import type {
   ActionDispatch,
   AnyActionArg,
+  Consumer,
+  Context,
   DependencyList,
   Dispatch,
   EffectCallback,
+  Provider,
   Ref,
   RefObject,
   SetStateAction,
@@ -72,3 +75,11 @@ expectTrue<
 >();
 
 expectTrue<Equal<typeof Original.useTransition, () => [boolean, TransitionStartFunction]>>();
+
+// Rule 2 relies on a context's provider taking exactly the context's value type.
+expectTrue<Equal<typeof Original.createContext, <T>(defaultValue: T) => Context<T>>>();
+expectTrue<Equal<Context<"value">["Provider"], Provider<"value">>>();
+expectTrue<Equal<Context<"value">["Consumer"], Consumer<"value">>>();
+expectTrue<Equal<Parameters<Provider<"value">>[0]["value"], "value">>();
+expectTrue<Equal<Context<"value"> extends Provider<"value"> ? true : false, true>>();
+expectTrue<Equal<typeof Original.useContext, <T>(context: Context<T>) => T>>();

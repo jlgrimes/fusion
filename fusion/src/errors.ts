@@ -6,27 +6,34 @@
  * error: `Type '{ id: number; }' is not assignable to type '"Dependency is not
  * stable: ..."'`. The message is the documentation, so each one says what is
  * wrong and what to write instead.
+ *
+ * TypeScript truncates a printed type at 320 characters, so every complete
+ * message has to stay under that. tests/runtime/messages.test.ts checks the
+ * exact text the compiler prints, and fails if a message is cut off.
  */
 
 import type { Dep } from "./stable";
 
 interface Consequence {
-  effect: "this effect will re-run every render";
-  memo: "this value will be recomputed every render and is not actually memoised";
-  callback: "this callback will be recreated every render and is not actually memoised";
-  handle: "this imperative handle will be recreated every render";
+  effect: "this effect can re-run every render";
+  memo: "this value is not reliably memoised";
+  callback: "this callback is not reliably memoised";
+  handle: "this handle can be recreated every render";
 }
 
 /** Which kind of hook the dependency array belongs to. */
 export type DepsKind = keyof Consequence;
 
 type Fix<T> = [T] extends [(...args: never[]) => unknown]
-  ? "Wrap it in useCallback, or move it outside the component and wrap it in stable()."
+  ? "Wrap it in useCallback, or move it out of the component and wrap it in stable()."
   : "Wrap it in useMemo/useCallback, or depend on a primitive (e.g. user.id) instead.";
+
+type Elsewhere =
+  "If it is a prop, type the prop as Stable<T>. If a library keeps it stable, use unsafeStable(value, reason).";
 
 /** The error shown for a dependency of type `T` that is not stable. */
 export type UnstableDependency<K extends DepsKind, T = unknown> =
-  `Dependency is not stable: it's recreated every render, so ${Consequence[K]}. ${Fix<T>}`;
+  `Dependency is not stable: it can change identity every render, so ${Consequence[K]}. ${Fix<T>} ${Elsewhere}`;
 
 /**
  * Checks a dependency list element by element. Stable elements pass through

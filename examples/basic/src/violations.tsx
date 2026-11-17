@@ -3,12 +3,15 @@
 // to Fusion for tsc, these directives would be unused and `pnpm typecheck`
 // would fail. Delete a directive to see the error message an agent would get.
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { TaskActionsContext } from "./TaskActions";
 import type { Task } from "./tasks";
 
 declare function track(event: string, payload?: unknown): void;
 
-export function Violations({ ownerId }: { ownerId: number }) {
+// --- Rule 1: dependency arrays only accept stable values ----------------------
+
+export function UnstableDependencies({ ownerId }: { ownerId: number }) {
   const [tasks] = useState<Task[]>([]);
 
   // @ts-expect-error inline object: a new one every render
@@ -25,4 +28,21 @@ export function Violations({ ownerId }: { ownerId: number }) {
   useEffect(() => track("done", tasks), [tasks]);
 
   return null;
+}
+
+// --- Rule 2: a context provider only accepts a stable value --------------------
+
+export function UnstableContextValue() {
+  const toggle = useCallback((id: number) => track("toggle", id), []);
+  const remove = useCallback((id: number) => track("remove", id), []);
+
+  return (
+    <>
+      {/* @ts-expect-error a new object every render re-renders every consumer */}
+      <TaskActionsContext value={{ toggle, remove }} />
+
+      {/* The fix: memoise it. */}
+      <TaskActionsContext value={useMemo(() => ({ toggle, remove }), [toggle, remove])} />
+    </>
+  );
 }
