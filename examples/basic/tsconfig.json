@@ -1,0 +1,17 @@
+{
+  // The Fusion preset maps "react" to the Fusion shim's types. That is the
+  // only Fusion-specific line in this file.
+  "extends": "fusion/tsconfig",
+  "compilerOptions": {
+    "target": "es2022",
+    "lib": ["es2023", "dom", "dom.iterable"],
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "types": ["node"]
+  },
+  "include": ["src", "tests", "vite.config.ts"]
+}

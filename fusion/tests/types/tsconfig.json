@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "types": [],
+    "paths": {
+      "react": ["../../types/react.d.ts"],
+      "fusion-react-original": ["../../node_modules/@types/react/index.d.ts"]
+    }
+  },
+  "include": ["."]
+}

@@ -1,0 +1,9 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "paths": {
+      "react": ["./types/react.d.ts"],
+      "fusion-react-original": ["${configDir}/node_modules/@types/react/index.d.ts"]
+    }
+  }
+}

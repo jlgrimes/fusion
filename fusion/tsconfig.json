@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "lib": ["es2023", "dom", "dom.iterable"],
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "skipLibCheck": false,
+    "types": ["node"],
+    "paths": {
+      "react": ["./types/react.d.ts"],
+      "fusion-react-original": ["./node_modules/@types/react/index.d.ts"]
+    }
+  },
+  "include": ["src", "types", "tests/runtime", "vite.ts", "vitest.config.ts"]
+}
